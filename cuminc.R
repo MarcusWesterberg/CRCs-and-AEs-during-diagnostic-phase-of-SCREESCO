@@ -88,8 +88,9 @@ compute_surv_curves <- function(data,
     
     se = sqrt(surv_curves$var) 
     z = 1.96
-    ci_upper <- surv_curves$est * exp(-z * se/(surv_curves$est * log(surv_curves$est)))
-    ci_lower = surv_curves$est * exp(z * se/(surv_curves$est * log(surv_curves$est)))
+    
+    ci_upper <- surv_curves$est + z*se
+    ci_lower <- surv_curves$est - z*se
     
     surv_curves$ci_lower = ci_lower
     surv_curves$ci_upper = ci_upper
@@ -374,6 +375,14 @@ n_at_risk_times <- c(0:6,6.9)
 width <- 11
 height <- 3.9
 
+extract_est <- function(d,outcome=1){
+  
+  round(rbind(d$est[nrow(d$est),outcome],
+              d$ci_lower[nrow(d$ci_lower),outcome],
+              d$ci_upper[nrow(d$ci_lower),outcome])*100,dig=5)
+  
+}
+
 ###
 # CRC overall in PCOL vs CONTROL
 
@@ -397,7 +406,11 @@ add_n_at_risk(d=surv_curves_fit2$control,n_at_risk_times=n_at_risk_times,n_at_ri
 
 dev.off()
 
+extract_est(d=surv_curves_pcol2$dk,outcome=1)
+extract_est(surv_curves_pcol2$control,outcome=1)
 
+extract_est(d=surv_curves_fit2$fit,outcome=1)
+extract_est(surv_curves_fit2$control,outcome=1)
 
 
 svg(file=".\\Resultat\\cuminc_crc_stage12.svg",width=width,height=height)
@@ -420,7 +433,11 @@ add_n_at_risk(d=surv_curves_fit$control,n_at_risk_times=n_at_risk_times,n_at_ris
 
 dev.off()
 
+extract_est(d=surv_curves_pcol$dk,outcome=1)
+extract_est(surv_curves_pcol$control,outcome=1)
 
+extract_est(d=surv_curves_fit$fit,outcome=1)
+extract_est(surv_curves_fit$control,outcome=1)
 
 
 svg(file=".\\Resultat\\cuminc_crc_stage34.svg",width=width,height=height)
@@ -443,6 +460,11 @@ add_n_at_risk(d=surv_curves_fit$control,n_at_risk_times=n_at_risk_times,n_at_ris
 
 dev.off()
 
+extract_est(d=surv_curves_pcol$dk,outcome=2)
+extract_est(surv_curves_pcol$control,outcome=2)
+
+extract_est(d=surv_curves_fit$fit,outcome=2)
+extract_est(surv_curves_fit$control,outcome=2)
 
 ###
 # End
